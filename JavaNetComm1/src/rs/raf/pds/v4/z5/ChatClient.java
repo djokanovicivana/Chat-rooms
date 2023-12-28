@@ -71,6 +71,13 @@ public class ChatClient implements Runnable{
 					showMessage(message.getUser()+"r:"+message.getTxt());
 					return;
 				}
+				if (object instanceof PrivateMessage) {
+	                PrivateMessage privateMessage = (PrivateMessage) object;
+	               if(privateMessage.getRecipient()==userName) {
+	                showPrivateMessage(privateMessage);
+	                }
+	                return;
+	            }
 			}
 			
 			public void disconnected(Connection connection) {
@@ -85,9 +92,12 @@ public class ChatClient implements Runnable{
 		System.out.println(txt);
 	}
 	private void showPrivateMessage(PrivateMessage privateMessage) {
-		System.out.println("Private message from "+privateMessage.getSender()+ ", message: "+ privateMessage.getMessage());
+		System.out.println("Primiliste privatnu poruku od  "+privateMessage.getSender()+ ", sa sadrzajem: "+ privateMessage.getMessage());
 		
-		
+	}
+	private void sendPrivateMessage(String recipient, String txt) {
+	    PrivateMessage privateMessage = new PrivateMessage(userName, recipient, txt);
+	    client.sendTCP(privateMessage);
 	}
 	private void showOnlineUsers(String[] users) {
 		System.out.print("Server:");
@@ -135,7 +145,15 @@ public class ChatClient implements Runnable{
 	            	}
 	            	else if ("WHO".equalsIgnoreCase(userInput)){
 	            		client.sendTCP(new WhoRequest());
-	            	}							
+	            	}
+	            	else if (userInput.startsWith("PRIVATE")) {
+	                    String[] text = userInput.split(" ", 3);
+	                    if (text.length == 3) {
+	                        sendPrivateMessage(text[1], text[2]);
+	                    } else {
+	                        System.out.println("Invalid private message format. Use PRIVATE @recipient_username @message");
+	                    }
+	                }
 	            	else {
 	            		ChatMessage message = new ChatMessage(userName, userInput);
 	            		client.sendTCP(message);

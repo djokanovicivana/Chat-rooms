@@ -13,6 +13,7 @@ import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
+import rs.raf.pds.v4.z5.messages.PrivateMessage;
 import rs.raf.pds.v4.z5.messages.WhoRequest;
 
 
@@ -61,6 +62,12 @@ public class ChatServer implements Runnable{
 					connection.sendTCP(listUsers);
 					return;
 				}
+				if (object instanceof PrivateMessage) {
+	                PrivateMessage privateMessage = (PrivateMessage) object;
+	                System.out.println(privateMessage.getSender()+":"+privateMessage.getMessage());
+	                newPrivateMessage(privateMessage, connection);
+	                return;
+	            }
 			}
 			
 			public void disconnected(Connection connection) {
@@ -100,6 +107,25 @@ public class ChatServer implements Runnable{
 				conn.sendTCP(new InfoMessage(txt));
 		}
 	}
+	private void newPrivateMessage(PrivateMessage privateMessage, Connection senderConnection) {
+        String senderUsername = connectionUserMap.get(senderConnection);
+       
+        String recipientUsername = privateMessage.getRecipient();
+        String messageText = privateMessage.getMessage();
+
+        Connection recipientConnection = userConnectionMap.get(recipientUsername);
+
+        if (recipientConnection != null && recipientConnection.isConnected()) {
+            recipientConnection.sendTCP(new PrivateMessage(senderUsername, recipientUsername, messageText));
+            recipientConnection.sendTCP(new InfoMessage("Primili ste privatnu poruku od "+senderUsername +", sa sadrzajem "+" " +messageText));
+            
+ 
+            senderConnection.sendTCP(new InfoMessage("Vasa privatna poruka namenjena  " + recipientUsername + " je poslata."));
+        } else {
+            senderConnection.sendTCP(new InfoMessage("Korisnik " + recipientUsername + " nije trenutno online."));
+        }
+    }
+
 	public void start() throws IOException {
 		server.start();
 		server.bind(portNumber);
