@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="JavaNetComm1/src"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z1/ProstClientSocket.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z1/ProstSocketServer.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z2/clientSocketThread.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z2/multiSocketServer.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z3/clientUDPSocket.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z3/serverUDPSocket.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z5/chatClient.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z5/chatServer.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/jars/z5/kryonet-2.21-all.jar"/>
+	<classpathentry kind="lib" path="JavaNetComm1/lib/kryonet-2.21-all.jar"/>
+	<classpathentry kind="output" path="JavaNetComm1/bin"/>
+</classpath>
