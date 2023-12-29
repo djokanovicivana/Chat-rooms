@@ -9,5 +9,8 @@ public class JoinRoomRequest {
 	public JoinRoomRequest(String roomName) {
 		this.roomName=roomName;
 	}
+	public String getRoom() {
+		return roomName;
+	}
 
 }

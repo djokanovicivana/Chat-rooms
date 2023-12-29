@@ -13,6 +13,7 @@ import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
+import rs.raf.pds.v4.z5.messages.JoinRoomRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
@@ -138,6 +139,10 @@ public class ChatClient implements Runnable{
 		 InviteUserRequest inviteUserRequest = new InviteUserRequest(room, user);
 		 client.sendTCP(inviteUserRequest);
 	}
+	private void joinRoom(String room) {
+		JoinRoomRequest joinRoomRequest=new JoinRoomRequest(room);
+		client.sendTCP(joinRoomRequest);
+	}
 	public void start() throws IOException {
 		client.start();
 		connect();
@@ -200,6 +205,15 @@ public class ChatClient implements Runnable{
 	            			inviteUser(text[1], text[2]);
 	            		}else {
 	            			System.out.println("Format za dodavanje korisnika u sobu nije ispravan!");
+	            		}
+	            		
+	            	}
+	            	else if(userInput.startsWith("JOIN")) {
+	            		String[] text=userInput.split(" ",2);
+	            		if(text.length==2) {
+	            			joinRoom(text[1]);
+	            		}else {
+	            			System.out.println("Format za pridruzivanje sobi nije ispravan!");
 	            		}
 	            		
 	            	}
