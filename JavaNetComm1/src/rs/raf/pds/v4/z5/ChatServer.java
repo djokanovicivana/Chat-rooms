@@ -176,7 +176,7 @@ public class ChatServer implements Runnable{
 		ChatRoom chatRoom = null;
 		Connection userConnection=userConnectionMap.get(userName);
 		for(ChatRoom room:chatRooms) {
-			if(room.getName()==roomName) {
+			if(room.getName().equals(roomName)) {
 				chatRoom=room;
 			}
 		}
