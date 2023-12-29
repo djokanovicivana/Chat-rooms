@@ -4,9 +4,9 @@ public class InviteUserRequest {
       private String userName;
       private String roomName;
       
-      public InviteUserRequest(String userName, String roomName) {
-    	  this.userName=userName;
+      public InviteUserRequest(String roomName, String userName) {
     	  this.roomName=roomName;
+    	  this.userName=userName;
       }
       public String getUser() {
     	  return userName;

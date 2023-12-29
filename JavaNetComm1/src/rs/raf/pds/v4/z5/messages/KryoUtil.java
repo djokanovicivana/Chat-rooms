@@ -16,5 +16,6 @@ public class KryoUtil {
 		kryo.register(java.util.ArrayList.class);
 		kryo.register(ListRoomsRequest.class);
 		kryo.register(ListRooms.class);
+		kryo.register(InviteUserRequest.class);
 	}
 }

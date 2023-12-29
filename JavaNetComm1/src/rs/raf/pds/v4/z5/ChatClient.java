@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Listener;
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
+import rs.raf.pds.v4.z5.messages.InviteUserRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
@@ -132,6 +133,10 @@ public class ChatClient implements Runnable{
 			System.out.println(room);
 		}
 	}
+	private void inviteUser(String room, String user) {
+		 InviteUserRequest inviteUserRequest = new InviteUserRequest(room, user);
+		 client.sendTCP(inviteUserRequest);
+	}
 	public void start() throws IOException {
 		client.start();
 		connect();
@@ -183,6 +188,15 @@ public class ChatClient implements Runnable{
 	            		String[] text=userInput.split(" ",2);
 	            		if(text.length==2) {
 	            			createChatRoom(text[1]);
+	            		}else {
+	            			System.out.println("Format za kreiranje nove sobe nije ispravan!");
+	            		}
+	            		
+	            	}
+	            	else if(userInput.startsWith("INVITE")) {
+	            		String[] text=userInput.split(" ",3);
+	            		if(text.length==2) {
+	            			inviteUser(text[1], text[2]);
 	            		}else {
 	            			System.out.println("Format za kreiranje nove sobe nije ispravan!");
 	            		}

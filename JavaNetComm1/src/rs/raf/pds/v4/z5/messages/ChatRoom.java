@@ -29,6 +29,9 @@ public class ChatRoom {
 	    public ArrayList<ChatMessage> getMessages() {
 	        return roomMessages;
 	    }
-	
+
+	    public void addUser(Connection user) {
+	    	roomUsers.add(user);
+	    }
 
 }
