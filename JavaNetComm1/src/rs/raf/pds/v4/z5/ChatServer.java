@@ -13,6 +13,7 @@ import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
+import rs.raf.pds.v4.z5.messages.JoinRoomRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
@@ -89,6 +90,11 @@ public class ChatServer implements Runnable{
 					InviteUserRequest inviteUserRequest=(InviteUserRequest) object;
 					System.out.println("Dodat je korisnik "+inviteUserRequest.getUser()+ " u sobu "+inviteUserRequest.getRoom());
 					addUser(inviteUserRequest.getRoom(),inviteUserRequest.getUser(), connection);
+				}
+				if(object instanceof JoinRoomRequest) {
+					JoinRoomRequest joinRoomRequest=(JoinRoomRequest) object;
+					joinRoom(joinRoomRequest.getRoom(), connection));
+		            return;
 				}
 			}
 			
@@ -189,6 +195,37 @@ public class ChatServer implements Runnable{
 		  con.sendTCP(new InfoMessage("Uspesno ste dodali korisnika "+ userName+" u sobu "+roomName));
 		}
 	}
+	public void joinRoom(String roomName, Connection con) {
+	    ChatRoom chatRoom = null;
+	    for (ChatRoom room : chatRooms) {
+	        if (room.getName().equals(roomName)) {
+	            chatRoom = room;
+	        }
+	    }
+
+	    if (chatRoom == null) {
+	        con.sendTCP(new InfoMessage("Soba sa imenom " + roomName + " ne postoji!"));
+	    } else {
+	        Connection userConnection = userConnectionMap.get(connectionUserMap.get(con));
+	        
+	        boolean userInRoom = false;
+	        for (Connection user : chatRoom.getUsers()) {
+	            if (user == userConnection) {
+	                userInRoom = true;
+	                break;
+	            }
+	        }
+
+	        if (userInRoom) {
+	            con.sendTCP(new InfoMessage("Već ste u sobi " + roomName));
+	            
+	        } else {
+	            chatRoom.addUser(userConnection);
+	            con.sendTCP(new InfoMessage("Uspešno ste se pridružili sobi " + roomName));
+	        }
+	    }
+	}
+
 	public void start() throws IOException {
 		server.start();
 		server.bind(portNumber);
