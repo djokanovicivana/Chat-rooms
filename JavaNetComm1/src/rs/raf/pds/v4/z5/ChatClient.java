@@ -9,8 +9,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
+import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
+import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
 import rs.raf.pds.v4.z5.messages.PrivateMessage;
@@ -78,6 +80,12 @@ public class ChatClient implements Runnable{
 	                }
 	                return;
 	            }
+				if (object instanceof ChatRoom) {
+					ChatRoom chatRoom=(ChatRoom) object;
+					createChatRoom(chatRoom.getName());
+					return;
+					
+				}
 			}
 			
 			public void disconnected(Connection connection) {
@@ -98,6 +106,10 @@ public class ChatClient implements Runnable{
 	private void sendPrivateMessage(String recipient, String txt) {
 	    PrivateMessage privateMessage = new PrivateMessage(userName, recipient, txt);
 	    client.sendTCP(privateMessage);
+	}
+	private void createChatRoom(String roomName) {
+		ChatRoom chatRoom=new ChatRoom(roomName);
+		client.sendTCP(chatRoom);
 	}
 	private void showOnlineUsers(String[] users) {
 		System.out.print("Server:");
@@ -147,13 +159,25 @@ public class ChatClient implements Runnable{
 	            		client.sendTCP(new WhoRequest());
 	            	}
 	            	else if (userInput.startsWith("PRIVATE")) {
+	                    // Format: /PRIVATE @recipient_username @message
 	                    String[] text = userInput.split(" ", 3);
 	                    if (text.length == 3) {
 	                        sendPrivateMessage(text[1], text[2]);
 	                    } else {
-	                        System.out.println("Invalid private message format. Use PRIVATE @recipient_username @message");
-	                    }
-	                }
+	                        System.out.println("Format za slanje privatne poruke nije ispravan!");
+	                    }}
+	            	else if(userInput.startsWith("CREATE")) {
+	            		String[] text=userInput.split(" ",2);
+	            		if(text.length==2) {
+	            			createChatRoom(text[1]);
+	            		}else {
+	            			System.out.println("Format za kreiranje nove sobe nije ispravan!");
+	            		}
+	            		
+	            	}
+	            	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
+	            		client.sendTCP(new ListRoomsRequest());
+	            	}
 	            	else {
 	            		ChatMessage message = new ChatMessage(userName, userInput);
 	            		client.sendTCP(message);

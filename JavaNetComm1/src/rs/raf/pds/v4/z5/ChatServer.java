@@ -1,6 +1,7 @@
 package rs.raf.pds.v4.z5;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -9,6 +10,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
+import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListUsers;
@@ -26,6 +28,7 @@ public class ChatServer implements Runnable{
 	final int portNumber;
 	ConcurrentMap<String, Connection> userConnectionMap = new ConcurrentHashMap<String, Connection>();
 	ConcurrentMap<Connection, String> connectionUserMap = new ConcurrentHashMap<Connection, String>();
+	private ArrayList<ChatRoom> chatRooms=new ArrayList<>();
 	
 	public ChatServer(int portNumber) {
 		this.server = new Server();
@@ -68,6 +71,12 @@ public class ChatServer implements Runnable{
 	                newPrivateMessage(privateMessage, connection);
 	                return;
 	            }
+				if(object instanceof ChatRoom) {
+					ChatRoom chatRoom=(ChatRoom)object;
+					System.out.println("Kreirana je soba "+chatRoom.getName());
+					createChatRoom(chatRoom, connection);
+					return;
+				}
 			}
 			
 			public void disconnected(Connection connection) {
@@ -125,7 +134,17 @@ public class ChatServer implements Runnable{
             senderConnection.sendTCP(new InfoMessage("Korisnik " + recipientUsername + " nije trenutno online."));
         }
     }
-
+	private void createChatRoom(ChatRoom chatRoom, Connection con) {
+		for(ChatRoom room:chatRooms) {
+			if(room.getName()==chatRoom.getName()) {
+				con.sendTCP(new InfoMessage("Soba sa imenom " +chatRoom.getName()+ " vec postoji!"));
+				return;
+			}}
+			chatRooms.add(chatRoom);
+			con.sendTCP(new InfoMessage("Uspesno ste kreirali sobu sa imenom "+ chatRoom.getName()));
+			
+		
+	}
 	public void start() throws IOException {
 		server.start();
 		server.bind(portNumber);

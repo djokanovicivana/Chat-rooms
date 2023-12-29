@@ -12,5 +12,8 @@ public class KryoUtil {
 		kryo.register(ListUsers.class);
 		kryo.register(InfoMessage.class);
 		kryo.register(PrivateMessage.class);
+		kryo.register(ChatRoom.class);
+		kryo.register(java.util.ArrayList.class);
+		kryo.register(ListRoomsRequest.class);
 	}
 }

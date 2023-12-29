@@ -9,6 +9,9 @@ public class ChatRoom {
 	private ArrayList<Connection> roomUsers;
 	private ArrayList<ChatMessage> roomMessages;
 	
+	public ChatRoom() {
+		
+	}
 	 public ChatRoom(String roomName) {
 	        this.roomName = roomName;
 	        this.roomUsers = new ArrayList<>();

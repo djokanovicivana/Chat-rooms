@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
-    <jar path="JavaNetComm1/JavaNetComm1/jars/z5/chatClient.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/JavaNetComm1/JavaNetComm1/src/rs/raf/pds/v4/z5/chatClient.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <jar path="JavaNetComm1/JavaNetComm1/jars/z5/chatServer.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/JavaNetComm1/JavaNetComm1/src/rs/raf/pds/v4/z5/chatServer.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,7 +11,7 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=JavaNetComm1/JavaNetComm1\/src&lt;rs.raf.pds.v4.z5{ChatClient.java"/>
+        <javaElement handleIdentifier="=JavaNetComm1/JavaNetComm1\/src&lt;rs.raf.pds.v4.z5{ChatServer.java"/>
         <javaElement handleIdentifier="=JavaNetComm1/JavaNetComm1\/src&lt;rs.raf.pds.v4.z5.messages"/>
     </selectedElements>
 </jardesc>
