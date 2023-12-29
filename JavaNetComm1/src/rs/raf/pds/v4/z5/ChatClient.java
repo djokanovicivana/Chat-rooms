@@ -3,6 +3,7 @@ package rs.raf.pds.v4.z5;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -12,6 +13,7 @@ import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
+import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
@@ -86,6 +88,11 @@ public class ChatClient implements Runnable{
 					return;
 					
 				}
+				if(object instanceof ListRooms) {
+					ListRooms listRooms=(ListRooms)object;
+					listAllRooms(listRooms.getRooms());
+					return;
+				}
 			}
 			
 			public void disconnected(Connection connection) {
@@ -117,6 +124,12 @@ public class ChatClient implements Runnable{
 			String user = users[i];
 			System.out.print(user);
 			System.out.printf((i==users.length-1?"\n":", "));
+		}
+	}
+	private void listAllRooms(ArrayList<String> rooms) {
+		System.out.print("Server:");
+		for(String room:rooms) {
+			System.out.println(room);
 		}
 	}
 	public void start() throws IOException {

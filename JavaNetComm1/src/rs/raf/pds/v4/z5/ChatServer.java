@@ -13,6 +13,8 @@ import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
+import rs.raf.pds.v4.z5.messages.ListRooms;
+import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
 import rs.raf.pds.v4.z5.messages.PrivateMessage;
@@ -77,6 +79,11 @@ public class ChatServer implements Runnable{
 					createChatRoom(chatRoom, connection);
 					return;
 				}
+				if(object instanceof ListRoomsRequest) {
+					ListRooms listRooms=new ListRooms(listAllRooms());
+					connection.sendTCP(listRooms);
+					return;
+				}
 			}
 			
 			public void disconnected(Connection connection) {
@@ -97,6 +104,14 @@ public class ChatServer implements Runnable{
 		}
 		
 		return users;
+	}
+	ArrayList<String> listAllRooms() {
+		ArrayList<String> roomList=new ArrayList<>();
+		for(ChatRoom chatRoom:chatRooms) {
+			roomList.add(chatRoom.getName());
+		}
+		return roomList;
+		
 	}
 	void newUserLogged(Login loginMessage, Connection conn) {
 		userConnectionMap.put(loginMessage.getUserName(), conn);
@@ -143,7 +158,13 @@ public class ChatServer implements Runnable{
 			chatRooms.add(chatRoom);
 			con.sendTCP(new InfoMessage("Uspesno ste kreirali sobu sa imenom "+ chatRoom.getName()));
 			
-		
+	}
+	public void listAllRooms(Connection con) {
+		String roomList="";
+		for(ChatRoom chatRoom:chatRooms) {
+			roomList+=chatRoom.getName()+", ";
+		}
+		con.sendTCP(new InfoMessage("Lista dostupnih soba: "+ roomList));
 	}
 	public void start() throws IOException {
 		server.start();
