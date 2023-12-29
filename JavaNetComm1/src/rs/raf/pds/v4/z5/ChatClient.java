@@ -94,6 +94,7 @@ public class ChatClient implements Runnable{
 					listAllRooms(listRooms.getRooms());
 					return;
 				}
+				
 			}
 			
 			public void disconnected(Connection connection) {

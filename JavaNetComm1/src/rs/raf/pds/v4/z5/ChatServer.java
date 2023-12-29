@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Server;
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
+import rs.raf.pds.v4.z5.messages.InviteUserRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
@@ -83,6 +84,11 @@ public class ChatServer implements Runnable{
 					ListRooms listRooms=new ListRooms(listAllRooms());
 					connection.sendTCP(listRooms);
 					return;
+				}
+				if(object instanceof InviteUserRequest) {
+					InviteUserRequest inviteUserRequest=(InviteUserRequest) object;
+					System.out.println("Dodat je korisnik "+inviteUserRequest.getUser()+ " u sobu "+inviteUserRequest.getRoom());
+					addUser(inviteUserRequest.getRoom(),inviteUserRequest.getUser(), connection);
 				}
 			}
 			
@@ -166,6 +172,23 @@ public class ChatServer implements Runnable{
 		}
 		con.sendTCP(new InfoMessage("Lista dostupnih soba: "+ roomList));
 	}
+	public void addUser(String roomName, String userName, Connection con) {
+		ChatRoom chatRoom = null;
+		Connection userConnection=userConnectionMap.get(userName);
+		for(ChatRoom room:chatRooms) {
+			if(room.getName()==roomName) {
+				chatRoom=room;
+			}
+		}
+		if(chatRoom==null) {
+			con.sendTCP(new InfoMessage("Zadata soba ne postoji!"));
+		}
+		else {
+		  chatRoom.addUser(userConnection);
+		  userConnection.sendTCP(new InfoMessage("Dodati ste u sobu "+chatRoom.getName()));
+		  con.sendTCP(new InfoMessage("Uspesno ste dodali korisnika "+ userName+" u sobu "+roomName));
+		}
+	}
 	public void start() throws IOException {
 		server.start();
 		server.bind(portNumber);
@@ -206,17 +229,9 @@ public class ChatServer implements Runnable{
 	   }
 	    
 	   int portNumber = Integer.parseInt(args[0]);
-	   try { 
-		   ChatServer chatServer = new ChatServer(portNumber);
-	   	   chatServer.start();
-	   
-			chatServer.thread.join();
-	   } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-	   } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	   try { {
+		   
+	   }
 	   }
 	}
 	
