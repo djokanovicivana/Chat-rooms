@@ -17,5 +17,6 @@ public class KryoUtil {
 		kryo.register(ListRoomsRequest.class);
 		kryo.register(ListRooms.class);
 		kryo.register(InviteUserRequest.class);
+		kryo.register(JoinRoomRequest.class);
 	}
 }
