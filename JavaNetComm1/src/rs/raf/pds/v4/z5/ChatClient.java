@@ -196,10 +196,10 @@ public class ChatClient implements Runnable{
 	            	}
 	            	else if(userInput.startsWith("INVITE")) {
 	            		String[] text=userInput.split(" ",3);
-	            		if(text.length==2) {
+	            		if(text.length==3) {
 	            			inviteUser(text[1], text[2]);
 	            		}else {
-	            			System.out.println("Format za kreiranje nove sobe nije ispravan!");
+	            			System.out.println("Format za dodavanje korisnika u sobu nije ispravan!");
 	            		}
 	            		
 	            	}

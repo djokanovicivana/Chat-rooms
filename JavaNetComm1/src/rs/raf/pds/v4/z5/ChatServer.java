@@ -220,7 +220,7 @@ public class ChatServer implements Runnable{
 	}
 	
 	
-	public static void main(String[] args) {
+public static void main(String[] args) {
 		
 		if (args.length != 1) {
 	        System.err.println("Usage: java -jar chatServer.jar <port number>");
@@ -229,11 +229,20 @@ public class ChatServer implements Runnable{
 	   }
 	    
 	   int portNumber = Integer.parseInt(args[0]);
-	   try { {
-		   
-	   }
+	   try { 
+		   ChatServer chatServer = new ChatServer(portNumber);
+	   	   chatServer.start();
+	   
+			chatServer.thread.join();
+	   } catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	   } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	   }
 	}
+	
 	
    
    
