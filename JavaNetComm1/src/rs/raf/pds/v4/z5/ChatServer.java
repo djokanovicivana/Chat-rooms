@@ -93,7 +93,7 @@ public class ChatServer implements Runnable{
 				}
 				if(object instanceof JoinRoomRequest) {
 					JoinRoomRequest joinRoomRequest=(JoinRoomRequest) object;
-					joinRoom(joinRoomRequest.getRoom(), connection));
+					joinRoom(joinRoomRequest.getRoom(), connection);
 		            return;
 				}
 			}

@@ -33,5 +33,13 @@ public class ChatRoom {
 	    public void addUser(Connection user) {
 	    	roomUsers.add(user);
 	    }
+	    public ArrayList<ChatMessage> getLastMessages(int count) {
+	        int size = roomMessages.size();
+	        int start = Math.max(0, size - count); 
+	        int end = size;  
+
+	        return new ArrayList<>(roomMessages.subList(start, end));
+	    }
+
 
 }
