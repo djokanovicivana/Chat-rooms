@@ -35,7 +35,8 @@ public class ChatClient implements Runnable{
 	final String hostName;
 	final int portNumber;
 	final String userName;
-	
+	private String currentRoom;
+
 	
 	public ChatClient(String hostName, int portNumber, String userName) {
 		this.client = new Client(DEFAULT_CLIENT_WRITE_BUFFER_SIZE, DEFAULT_CLIENT_READ_BUFFER_SIZE);
@@ -142,6 +143,7 @@ public class ChatClient implements Runnable{
 	private void joinRoom(String room) {
 		JoinRoomRequest joinRoomRequest=new JoinRoomRequest(room);
 		client.sendTCP(joinRoomRequest);
+		 currentRoom = room;
 	}
 	public void start() throws IOException {
 		client.start();
@@ -221,8 +223,15 @@ public class ChatClient implements Runnable{
 	            		client.sendTCP(new ListRoomsRequest());
 	            	}
 	            	else {
+	            		if(currentRoom==null) {
 	            		ChatMessage message = new ChatMessage(userName, userInput);
 	            		client.sendTCP(message);
+	            		}
+	            		else {
+	            			ChatMessage message = new ChatMessage(userName, userInput, currentRoom);
+	            			client.sendTCP(message);
+	            		}
+	            		
 	            	}
 	            	
 	            	if (!client.isConnected() && running)

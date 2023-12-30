@@ -131,11 +131,35 @@ public class ChatServer implements Runnable{
 		showTextToAll("User "+loginMessage.getUserName()+" has connected!", conn);
 	}
 	private void broadcastChatMessage(ChatMessage message, Connection exception) {
-		for (Connection conn: userConnectionMap.values()) {
-			if (conn.isConnected() && conn != exception)
-				conn.sendTCP(message);
-		}
+	    if (message.getRoom() != null) {
+	        ChatRoom chatRoom = findChatRoomByName(message.getRoom());
+	        if (chatRoom != null) {
+	        	chatRoom.addMessage(message);
+	            for (Connection userConnection : chatRoom.getUsers()) {
+	                if (userConnection.isConnected() && userConnection != exception) {
+	                    userConnection.sendTCP(message);
+	                }
+	            }
+	        }
+	    } else {
+	       
+	        for (Connection conn : userConnectionMap.values()) {
+	            if (conn.isConnected() && conn != exception) {
+	                conn.sendTCP(message);
+	            }
+	        }
+	    }
 	}
+
+	private ChatRoom findChatRoomByName(String roomName) {
+	    for (ChatRoom room : chatRooms) {
+	        if (room.getName().equals(roomName)) {
+	            return room;
+	        }
+	    }
+	    return null;
+	}
+
 	private void showTextToAll(String txt, Connection exception) {
 		System.out.println(txt);
 		for (Connection conn: userConnectionMap.values()) {
@@ -212,7 +236,6 @@ public class ChatServer implements Runnable{
 	        for (Connection user : chatRoom.getUsers()) {
 	            if (user == userConnection) {
 	                userInRoom = true;
-	                break;
 	            }
 	        }
 
