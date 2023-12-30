@@ -326,6 +326,28 @@ public class ChatClient implements Runnable{
      		}
      		
      	}
+     	 else if (userInput.startsWith("ED ")) {
+             // Format: ED @message_id @new_content
+             String[] parts = userInput.split(" ", 4);
+             if (parts.length == 4) {
+                 int messageId = Integer.parseInt(parts[1]);
+                 String newContent = parts[3];
+                 // Implementirajte logiku za editovanje poruke
+                 client.editMessage(currentRoom, messageId, newContent);
+             } else {
+                 System.out.println("Format za editovanje poruke nije ispravan!");
+             }
+         } else if (userInput.startsWith("REPLY ")) {
+             // Format: REPLY @message_id @reply_content
+             String[] parts = userInput.split(" ", 4);
+             if (parts.length == 4) {
+                 int messageId = Integer.parseInt(parts[1]);
+                 String replyContent = parts[3];
+                 // Implementirajte logiku za odgovaranje na poruku
+                 client.replyToMessage(currentRoom, messageId, replyContent);
+             } else {
+                 System.out.println("Format za odgovaranje na poruku nije ispravan!");
+             }
      	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
      		client.sendTCP(new ListRoomsRequest());
      	}
