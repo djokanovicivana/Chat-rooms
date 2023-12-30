@@ -11,6 +11,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
+import rs.raf.pds.v4.z5.messages.GetMoreMessagesRequest;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
 import rs.raf.pds.v4.z5.messages.JoinRoomRequest;
@@ -221,6 +222,9 @@ public class ChatClient implements Runnable{
 	            	}
 	            	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
 	            		client.sendTCP(new ListRoomsRequest());
+	            	}
+	            	else if("GET MORE MESSAGES".equalsIgnoreCase(userInput)) {
+	            		client.sendTCP(new GetMoreMessagesRequest());
 	            	}
 	            	else {
 	            		if(currentRoom==null) {

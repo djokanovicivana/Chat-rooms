@@ -255,16 +255,22 @@ public class ChatServer implements Runnable{
 	        }
 	    }
 	}
-private ArrayList<ChatMessage> getLastMessagesForRoom(String roomName) {	
-	ChatRoom chatRoom = null;
-    for (ChatRoom room : chatRooms) {
-        if (room.getName().equals(roomName)) {
-            chatRoom = room;
-        }
-    }
-	    return chatRoom.getLastMessages(5);
+	private ArrayList<ChatMessage> getLastMessagesForRoom(String roomName) {
+	    ChatRoom chatRoom = null;
+	    for (ChatRoom room : chatRooms) {
+	        if (room.getName().equals(roomName)) {
+	            chatRoom = room;
+	            break;
+	        }
+	    }
 
+	    if (chatRoom != null) {
+	        return chatRoom.getLastMessages(5);
+	    } else {
+	        return new ArrayList<>(); // Vraćamo praznu listu ako soba nije pronađena
+	    }
 	}
+
 
 	public void start() throws IOException {
 		server.start();
@@ -292,6 +298,7 @@ private ArrayList<ChatMessage> getLastMessagesForRoom(String roomName) {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				 System.err.println("Error starting the chat server: " + e.getMessage());
 			}
 		}
 	}
