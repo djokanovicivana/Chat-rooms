@@ -7,6 +7,10 @@ public class ListMessages {
 	
 	public ListMessages() {}
 	
+	public ListMessages(ArrayList<ChatMessage> messages) {
+		this.messages=messages;
+	}
+	
 	public ArrayList<ChatMessage> getMessages() {
 		return messages;
 	}

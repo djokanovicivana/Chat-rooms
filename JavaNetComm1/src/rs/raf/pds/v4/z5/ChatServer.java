@@ -11,10 +11,12 @@ import com.esotericsoftware.kryonet.Server;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
+import rs.raf.pds.v4.z5.messages.GetMoreMessagesRequest;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
 import rs.raf.pds.v4.z5.messages.JoinRoomRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
+import rs.raf.pds.v4.z5.messages.ListMessages;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
@@ -96,7 +98,13 @@ public class ChatServer implements Runnable{
 					joinRoom(joinRoomRequest.getRoom(), connection);
 		            return;
 				}
-			}
+				if(object instanceof GetMoreMessagesRequest) {
+					ListMessages listMessages=new ListMessages(getMoreMessages(roomName, connection));
+					connection.sendTCP(listMessages);
+					return;
+					
+				}
+		
 			
 			public void disconnected(Connection connection) {
 				String user = connectionUserMap.get(connection);
