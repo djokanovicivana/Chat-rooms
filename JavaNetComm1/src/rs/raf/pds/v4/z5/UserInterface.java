@@ -18,7 +18,7 @@ public class UserInterface extends Application {
         VBox root = new VBox(usernameField, connectButton);
         Scene scene = new Scene(root, 300, 200);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Simple Chat Client");
+        primaryStage.setTitle("Chat aplikacija");
         primaryStage.show();
 
         connectButton.setOnAction(event -> {
@@ -35,7 +35,7 @@ public class UserInterface extends Application {
 
         TextArea chatArea = new TextArea();
         TextField inputField = new TextField();
-        Button sendButton = new Button("Send");
+        Button sendButton = new Button("Posalji");
 
         VBox chatRoot = new VBox(chatArea, inputField, sendButton);
 
@@ -51,9 +51,6 @@ public class UserInterface extends Application {
 
         try {
             chatClient.start();
-            chatClient.setMessageListener(message -> {
-                handle(message, chatArea);
-            });
         } catch (IOException ex) {
             ex.printStackTrace();
             System.err.println("Error connecting to the server: " + ex.getMessage());
@@ -61,52 +58,8 @@ public class UserInterface extends Application {
 
         Scene chatScene = new Scene(chatRoot, 400, 300);
         chatStage.setScene(chatScene);
-        chatStage.setTitle("Chat Client - " + username);
+        chatStage.setTitle("Korisnik - " + username);
         chatStage.show();
-    }
-
-    private void handle(String message, TextArea chatArea) {
-        if (message.startsWith("/PRIVATE")) {
-            handlePrivateMessage(message, chatArea);
-        } else if (message.startsWith("/INFO")) {
-            handleInfoMessage(message, chatArea);
-        } else if (message.startsWith("/ROOM")) {
-            handleRoomMessage(message, chatArea);
-        } else {
-            // Handle other types of messages
-            chatArea.appendText(message + "\n");
-        }
-    }
-
-    private void handlePrivateMessage(String message, TextArea chatArea) {
-        // Implement handling for private messages
-        // Format: /PRIVATE @recipient_username @message
-        String[] parts = message.split(" ", 3);
-        if (parts.length == 3) {
-            String recipient = parts[1];
-            String privateMessage = parts[2];
-            chatArea.appendText("Private message to " + recipient + ": " + privateMessage + "\n");
-        }
-    }
-
-    private void handleInfoMessage(String message, TextArea chatArea) {
-        // Implement handling for info messages
-        // Format: /INFO @info_message
-        String[] parts = message.split(" ", 2);
-        if (parts.length == 2) {
-            String infoMessage = parts[1];
-            chatArea.appendText("Info message: " + infoMessage + "\n");
-        }
-    }
-
-    private void handleRoomMessage(String message, TextArea chatArea) {
-        // Implement handling for room messages
-        // Format: /ROOM @room_name
-        String[] parts = message.split(" ", 2);
-        if (parts.length == 2) {
-            String roomName = parts[1];
-            chatArea.appendText("You joined room: " + roomName + "\n");
-        }
     }
 
     @Override
