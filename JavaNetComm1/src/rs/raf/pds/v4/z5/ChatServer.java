@@ -217,13 +217,23 @@ public class ChatServer implements Runnable{
 	        }
 
 	        if (userInRoom) {
-	            con.sendTCP(new InfoMessage("Već ste u sobi " + roomName));
+	            con.sendTCP(new InfoMessage("Vec ste u sobi " + roomName));
 	            
 	        } else {
 	            chatRoom.addUser(userConnection);
-	            con.sendTCP(new InfoMessage("Uspešno ste se pridružili sobi " + roomName));
+	            con.sendTCP(new InfoMessage("Uspesno ste se pridruzili sobi " + roomName));
 	        }
 	    }
+	}
+private ArrayList<ChatMessage> getLastMessagesForRoom(String roomName) {	
+	ChatRoom chatRoom = null;
+    for (ChatRoom room : chatRooms) {
+        if (room.getName().equals(roomName)) {
+            chatRoom = room;
+        }
+    }
+	    return chatRoom.getLastMessages(5);
+
 	}
 
 	public void start() throws IOException {
