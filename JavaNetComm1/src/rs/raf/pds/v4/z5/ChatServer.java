@@ -217,11 +217,18 @@ public class ChatServer implements Runnable{
 	        }
 
 	        if (userInRoom) {
-	            con.sendTCP(new InfoMessage("Vec ste u sobi " + roomName));
+	        	  ArrayList<ChatMessage> lastMessages = getLastMessagesForRoom(roomName);
+	              for (ChatMessage message : lastMessages) {
+	                  con.sendTCP(message);
+	              }
 	            
 	        } else {
 	            chatRoom.addUser(userConnection);
 	            con.sendTCP(new InfoMessage("Uspesno ste se pridruzili sobi " + roomName));
+	            ArrayList<ChatMessage> lastMessages = getLastMessagesForRoom(roomName);
+	            for (ChatMessage message : lastMessages) {
+	                con.sendTCP(message);
+	            }
 	        }
 	    }
 	}

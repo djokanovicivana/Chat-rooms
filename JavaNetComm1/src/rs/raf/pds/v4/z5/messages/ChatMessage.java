@@ -3,6 +3,7 @@ package rs.raf.pds.v4.z5.messages;
 public class ChatMessage {
 	String user;
 	String txt;
+	String room; 
 	
 	protected ChatMessage() {
 		
