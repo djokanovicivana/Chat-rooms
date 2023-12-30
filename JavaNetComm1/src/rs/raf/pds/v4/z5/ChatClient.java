@@ -224,7 +224,11 @@ public class ChatClient implements Runnable{
 	            		client.sendTCP(new ListRoomsRequest());
 	            	}
 	            	else if("GET MORE MESSAGES".equalsIgnoreCase(userInput)) {
-	            		client.sendTCP(new GetMoreMessagesRequest());
+	            		if(currentRoom==null) {
+		            		ChatMessage message = new ChatMessage(userName, userInput);
+		            		client.sendTCP(message);
+		            }else {
+	            		client.sendTCP(new GetMoreMessagesRequest());}
 	            	}
 	            	else {
 	            		if(currentRoom==null) {
