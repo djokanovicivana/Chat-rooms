@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -37,6 +38,7 @@ public class ChatClient implements Runnable{
 	final int portNumber;
 	final String userName;
 	private String currentRoom;
+	  private Consumer<String> messageListener;
 
 	
 	public ChatClient(String hostName, int portNumber, String userName) {
@@ -166,7 +168,7 @@ public class ChatClient implements Runnable{
 	public void connect() throws IOException {
 		client.connect(1000, hostName, portNumber);
 	}
-	public void run() {
+	/*public void run() {
 		
 		try (
 				BufferedReader stdIn = new BufferedReader(
@@ -255,7 +257,98 @@ public class ChatClient implements Runnable{
 			System.out.println("CLIENT SE DISCONNECTUJE");
 			client.close();;
 		}
+	}*/
+	 public void setMessageListener(Consumer<String> listener) {
+	        this.messageListener = listener;
+	    }
+	public void run() {
+	    try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
+	        String userInput;
+	        running = true;
+
+	        while (running) {
+	            userInput = stdIn.readLine();
+	            if (userInput == null || "BYE".equalsIgnoreCase(userInput)) {
+	                running = false;
+	            } else {
+	                handleUserInput(userInput);
+	            }
+
+	            if (!client.isConnected() && running)
+	                connect();
+	        }
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } finally {
+	        running = false;
+	        System.out.println("CLIENT SE DISCONNECTUJE");
+	        client.close();
+	    }
 	}
+
+	public void handleUserInput(String userInput) {
+		 if ("WHO".equalsIgnoreCase(userInput)){
+     		client.sendTCP(new WhoRequest());
+     	}
+     	else if (userInput.startsWith("PRIVATE")) {
+             // Format: /PRIVATE @recipient_username @message
+             String[] text = userInput.split(" ", 3);
+             if (text.length == 3) {
+                 sendPrivateMessage(text[1], text[2]);
+             } else {
+                 System.out.println("Format za slanje privatne poruke nije ispravan!");
+             }}
+     	else if(userInput.startsWith("CREATE")) {
+     		String[] text=userInput.split(" ",2);
+     		if(text.length==2) {
+     			createChatRoom(text[1]);
+     		}else {
+     			System.out.println("Format za kreiranje nove sobe nije ispravan!");
+     		}
+     		
+     	}
+     	else if(userInput.startsWith("INVITE")) {
+     		String[] text=userInput.split(" ",3);
+     		if(text.length==3) {
+     			inviteUser(text[1], text[2]);
+     		}else {
+     			System.out.println("Format za dodavanje korisnika u sobu nije ispravan!");
+     		}
+     		
+     	}
+     	else if(userInput.startsWith("JOIN")) {
+     		String[] text=userInput.split(" ",2);
+     		if(text.length==2) {
+     			joinRoom(text[1]);
+     		}else {
+     			System.out.println("Format za pridruzivanje sobi nije ispravan!");
+     		}
+     		
+     	}
+     	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
+     		client.sendTCP(new ListRoomsRequest());
+     	}
+     	else if("GET MORE MESSAGES".equalsIgnoreCase(userInput)) {
+     		if(currentRoom==null) {
+         		ChatMessage message = new ChatMessage(userName, userInput);
+         		client.sendTCP(message);
+         }else {
+     		client.sendTCP(new GetMoreMessagesRequest());}
+     	}
+     	else {
+     		if(currentRoom==null) {
+     		ChatMessage message = new ChatMessage(userName, userInput);
+     		client.sendTCP(message);
+     		}
+     		else {
+     			ChatMessage message = new ChatMessage(userName, userInput, currentRoom);
+     			client.sendTCP(message);
+     		}
+     		
+     	}
+	}
+
 	public static void main(String[] args) {
 		if (args.length != 3) {
 		

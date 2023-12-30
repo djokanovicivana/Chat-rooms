@@ -99,6 +99,8 @@ public class ChatServer implements Runnable{
 		            return;
 				}
 				if(object instanceof GetMoreMessagesRequest) {
+		           GetMoreMessagesRequest moreMessages=(GetMoreMessagesRequest) object;
+		           String roomName=moreMessages.getRoomName();
 					ListMessages listMessages=new ListMessages(getMoreMessages(roomName, connection));
 					connection.sendTCP(listMessages);
 					return;
