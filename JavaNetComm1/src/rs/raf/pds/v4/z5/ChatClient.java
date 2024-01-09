@@ -24,6 +24,7 @@ import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
 import rs.raf.pds.v4.z5.messages.PrivateMessage;
+import rs.raf.pds.v4.z5.messages.ReplyMessageRequest;
 import rs.raf.pds.v4.z5.messages.WhoRequest;
 
 public class ChatClient implements Runnable{
@@ -40,7 +41,11 @@ public class ChatClient implements Runnable{
 	final int portNumber;
 	final String userName;
 	private String currentRoom;
-	//private Consumer<String> messageListener;
+	private Consumer<String> messageListener;
+	
+	 public void setMessageListener(Consumer<String> listener) {
+	        this.messageListener = listener;
+	    }
 
 	
 	public ChatClient(String hostName, int portNumber, String userName) {
@@ -166,7 +171,10 @@ public class ChatClient implements Runnable{
 		EditMessageRequest editMessageRequest=new EditMessageRequest(roomName, id,newContent);
 		client.sendTCP(editMessageRequest);
 	}
-	
+	private void replyMessage(String roomName, int id, String response) {
+		ReplyMessageRequest replyMessageRequest=new ReplyMessageRequest(roomName, id,response);
+		client.sendTCP(replyMessageRequest);
+	}
 	public void start() throws IOException {
 		client.start();
 		connect();
@@ -352,6 +360,16 @@ public class ChatClient implements Runnable{
      		}
      		
      	}
+    	else if(userInput.startsWith("REPLY")) {
+     		String[] text=userInput.split(" ",3);
+     		if(text.length==3) {
+     			replyMessage(currentRoom,Integer.parseInt(text[1]),text[2]);
+     		}else {
+     			System.out.println("Format za odgovaranje na poruku nije ispravan!");
+     		}
+     		
+     	}
+  
   
      	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
      		client.sendTCP(new ListRoomsRequest());

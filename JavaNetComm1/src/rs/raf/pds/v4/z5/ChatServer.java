@@ -112,9 +112,14 @@ public class ChatServer implements Runnable{
 				    String roomName = editMessageRequest.getRoomName();
 				    int messageId = editMessageRequest.getMessageId();
 				    String newContent = editMessageRequest.getNewContent();
-				    handleEditMessage(roomName,messageId,newContent,connection);
-
-				    
+				    handleEditMessage(roomName,messageId,newContent,connection);  
+				}
+				if (object instanceof ReplyMessageRequest) {
+				    ReplyMessageRequest replyMessageRequest = (ReplyMessageRequest) object;
+				    String roomName = replyMessageRequest.getRoomName();
+				    int messageId = replyMessageRequest.getMessageId();
+				    String response = replyMessageRequest.getResponse();
+				    handleReplyMessage(roomName,messageId,response,connection);  
 				    
 				}
 }
@@ -355,7 +360,50 @@ public class ChatServer implements Runnable{
 	        }
 	    }
 	}
+	  private boolean handleReplyMessage(String roomName, int messageId, String response, Connection replierCon) {
+	        ChatRoom chatRoom = null;
+	        String userName = connectionUserMap.get(replierCon);
+	        
+	        for (ChatRoom room : chatRooms) {
+	            if (room.getName().equals(roomName)) {
+	                chatRoom = room;
+	                break;
+	            }
+	        }
 
+	        if (chatRoom == null) {
+	            replierCon.sendTCP(new InfoMessage("Soba ne postoji!"));
+	            return false;
+	        }
+
+	        ChatMessage originalMessage = chatRoom.getMessages().get(messageId);
+	        if (originalMessage == null) {
+	            replierCon.sendTCP(new InfoMessage("Poruka ne postoji!"));
+	            return false;
+	        }
+
+	        String repliedMessageText = originalMessage.getTxt();
+	        String repliedUserName = originalMessage.getUser();
+	        String newMessageText = userName + " replied to " + repliedUserName + ": " + response;
+
+	        ChatMessage repliedMessage = new ChatMessage(userName, newMessageText, roomName);
+	        chatRoom.addMessage(repliedMessage);
+
+	        replierCon.sendTCP(new InfoMessage("Uspešno ste odgovorili na poruku!"));
+
+	        broadcastRepliedMessage(chatRoom, repliedMessage, originalMessage, userName);
+
+	        return true; // Uspesno odgovaranje na poruku
+	    }
+
+	    private void broadcastRepliedMessage(ChatRoom chatRoom, ChatMessage repliedMessage, ChatMessage originalMessage, String userName) {
+	        for (Connection userConnection : chatRoom.getUsers()) {
+	            if (userConnection.isConnected()) {
+	                userConnection.sendTCP(new InfoMessage(userName + " je odgovorio na poruku od " + originalMessage.getUser() +
+	                        ": '" + originalMessage.getTxt() + "' i napisao: '" + repliedMessage.getTxt() + "'"));
+	            }
+	        }
+	    }
 
 
 	public void start() throws IOException {
