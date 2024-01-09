@@ -106,7 +106,18 @@ public class ChatServer implements Runnable{
 					ListMessages listMessages=new ListMessages(getMoreMessages(roomName, connection));
 					connection.sendTCP(listMessages);
 					return;
-				}				}
+				}		
+				if (object instanceof EditMessageRequest) {
+				    EditMessageRequest editMessageRequest = (EditMessageRequest) object;
+				    String roomName = editMessageRequest.getRoomName();
+				    int messageId = editMessageRequest.getMessageId();
+				    String newContent = editMessageRequest.getNewContent();
+				    handleEditMessage(roomName,messageId,newContent,connection);
+
+				    
+				    
+				}
+}
 			
 
 		
@@ -310,6 +321,40 @@ public class ChatServer implements Runnable{
 	        return new ArrayList<>(); // Vraćamo praznu listu ako soba nije pronađena
 	    }
 	}
+	private boolean handleEditMessage(String roomName, int messageId, String newContent, Connection editorCon) {
+	    ChatRoom chatRoom = null;
+	    for (ChatRoom room : chatRooms) {
+	        if (room.getName().equals(roomName)) {
+	            chatRoom = room;
+	            break;
+	        }
+	    }
+	    if (chatRoom == null) {
+	    	editorCon.sendTCP(new InfoMessage("Soba ne postoji!"));
+	        return false; 
+	    }
+
+	    ChatMessage editedMessage = chatRoom.getMessages().get(messageId);
+	    if (editedMessage == null) {
+	    	editorCon.sendTCP(new InfoMessage("Poruka ne postoji!"));
+	        return false; 
+	    }
+	    
+	    editedMessage.setTxt(newContent);
+	    editorCon.sendTCP(new InfoMessage("Uspesno ste izmenili poruku!"));
+	    
+	    broadcastEditedMessage(chatRoom, editedMessage, messageId);
+
+	    return true; // Uspesno editovanje
+	}
+	private void broadcastEditedMessage(ChatRoom chatRoom, ChatMessage editedMessage, int messageId) {
+	    for (Connection userConnection : chatRoom.getUsers()) {
+	        if (userConnection.isConnected()) {
+	            userConnection.sendTCP(new InfoMessage("Poruka '"+chatRoom.getMessages().get(messageId).getTxt()+ "' je izmenjena i sada glasi: "+editedMessage.getTxt() ));
+	        }
+	    }
+	}
+
 
 
 	public void start() throws IOException {

@@ -28,6 +28,9 @@ public class ChatMessage {
 	public String getRoom() {
 		return room;
 	}
+	public void setTxt(String txt) {
+		this.txt=txt;
+	}
 	
 	
 }

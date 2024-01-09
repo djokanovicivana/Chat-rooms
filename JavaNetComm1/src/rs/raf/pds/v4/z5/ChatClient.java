@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
+import rs.raf.pds.v4.z5.messages.EditMessageRequest;
 import rs.raf.pds.v4.z5.messages.GetMoreMessagesRequest;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
@@ -161,6 +162,11 @@ public class ChatClient implements Runnable{
 		client.sendTCP(joinRoomRequest);
 		 currentRoom = room;
 	}
+	private void editMessage(String roomName, int id, String newContent) {
+		EditMessageRequest editMessageRequest=new EditMessageRequest(roomName, id,newContent);
+		client.sendTCP(editMessageRequest);
+	}
+	
 	public void start() throws IOException {
 		client.start();
 		connect();
@@ -334,6 +340,15 @@ public class ChatClient implements Runnable{
      			joinRoom(text[1]);
      		}else {
      			System.out.println("Format za pridruzivanje sobi nije ispravan!");
+     		}
+     		
+     	}
+    	else if(userInput.startsWith("EDIT")) {
+     		String[] text=userInput.split(" ",3);
+     		if(text.length==2) {
+     			editMessage(currentRoom,Integer.parseInt(text[1]),text[2]);
+     		}else {
+     			System.out.println("Format za editovanje poruke nije ispravan!");
      		}
      		
      	}
