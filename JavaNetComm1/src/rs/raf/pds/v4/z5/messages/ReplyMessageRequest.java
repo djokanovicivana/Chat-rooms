@@ -4,15 +4,24 @@ public class ReplyMessageRequest {
 	
 	public String roomName;
     public int messageId;
-    public String replyContent;
+    public String response;
     
     public ReplyMessageRequest() {
     	
     }
-    public ReplyMessageRequest(String roomName, int messageId,String replyContent) {
+    public ReplyMessageRequest(String roomName, int messageId,String response) {
     	this.roomName=roomName;
     	this.messageId=messageId;
-    	this.replyContent=replyContent;
+    	this.response=response;
+    }
+    public String getRoomName() {
+    	return roomName;
+    }
+    public int getMessageId() {
+    	return messageId;
+    }
+    public String getResponse() {
+    	return response;
     }
 
 }
