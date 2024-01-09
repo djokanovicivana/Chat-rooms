@@ -17,6 +17,7 @@ import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
 import rs.raf.pds.v4.z5.messages.JoinRoomRequest;
 import rs.raf.pds.v4.z5.messages.KryoUtil;
+import rs.raf.pds.v4.z5.messages.ListMessages;
 import rs.raf.pds.v4.z5.messages.ListRooms;
 import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
@@ -38,7 +39,7 @@ public class ChatClient implements Runnable{
 	final int portNumber;
 	final String userName;
 	private String currentRoom;
-	  private Consumer<String> messageListener;
+	//private Consumer<String> messageListener;
 
 	
 	public ChatClient(String hostName, int portNumber, String userName) {
@@ -99,6 +100,12 @@ public class ChatClient implements Runnable{
 					listAllRooms(listRooms.getRooms());
 					return;
 				}
+				if(object instanceof ListMessages) {
+					ListMessages listMessages=(ListMessages)object;
+					listMoreMessages(listMessages.getMessages());
+					return;
+				}
+				
 				
 			}
 			
@@ -137,6 +144,12 @@ public class ChatClient implements Runnable{
 		System.out.print("Server:");
 		for(String room:rooms) {
 			System.out.println(room);
+		}
+	}
+	private void listMoreMessages(ArrayList<ChatMessage> messages) {
+		System.out.print("Server:");
+		for(ChatMessage message:messages) {
+			System.out.println(message.getTxt());
 		}
 	}
 	private void inviteUser(String room, String user) {
@@ -258,9 +271,7 @@ public class ChatClient implements Runnable{
 			client.close();;
 		}
 	}*/
-	 public void setMessageListener(Consumer<String> listener) {
-	        this.messageListener = listener;
-	    }
+	
 	public void run() {
 	    try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
 	        String userInput;
@@ -326,28 +337,7 @@ public class ChatClient implements Runnable{
      		}
      		
      	}
-     	 else if (userInput.startsWith("ED ")) {
-             // Format: ED @message_id @new_content
-             String[] parts = userInput.split(" ", 4);
-             if (parts.length == 4) {
-                 int messageId = Integer.parseInt(parts[1]);
-                 String newContent = parts[3];
-                 // Implementirajte logiku za editovanje poruke
-                 client.editMessage(currentRoom, messageId, newContent);
-             } else {
-                 System.out.println("Format za editovanje poruke nije ispravan!");
-             }
-         } else if (userInput.startsWith("REPLY ")) {
-             // Format: REPLY @message_id @reply_content
-             String[] parts = userInput.split(" ", 4);
-             if (parts.length == 4) {
-                 int messageId = Integer.parseInt(parts[1]);
-                 String replyContent = parts[3];
-                 // Implementirajte logiku za odgovaranje na poruku
-                 client.replyToMessage(currentRoom, messageId, replyContent);
-             } else {
-                 System.out.println("Format za odgovaranje na poruku nije ispravan!");
-             }
+  
      	else if("LIST ROOMS".equalsIgnoreCase(userInput)) {
      		client.sendTCP(new ListRoomsRequest());
      	}
@@ -356,8 +346,7 @@ public class ChatClient implements Runnable{
          		ChatMessage message = new ChatMessage(userName, userInput);
          		client.sendTCP(message);
          }else {
-     		client.sendTCP(new GetMoreMessagesRequest());}
-     	}
+     		client.sendTCP(new GetMoreMessagesRequest(currentRoom));}     	}
      	else {
      		if(currentRoom==null) {
      		ChatMessage message = new ChatMessage(userName, userInput);

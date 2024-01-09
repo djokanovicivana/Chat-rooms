@@ -11,6 +11,7 @@ import com.esotericsoftware.kryonet.Server;
 
 import rs.raf.pds.v4.z5.messages.ChatMessage;
 import rs.raf.pds.v4.z5.messages.ChatRoom;
+import rs.raf.pds.v4.z5.messages.EditMessageRequest;
 import rs.raf.pds.v4.z5.messages.GetMoreMessagesRequest;
 import rs.raf.pds.v4.z5.messages.InfoMessage;
 import rs.raf.pds.v4.z5.messages.InviteUserRequest;
@@ -22,6 +23,7 @@ import rs.raf.pds.v4.z5.messages.ListRoomsRequest;
 import rs.raf.pds.v4.z5.messages.ListUsers;
 import rs.raf.pds.v4.z5.messages.Login;
 import rs.raf.pds.v4.z5.messages.PrivateMessage;
+import rs.raf.pds.v4.z5.messages.ReplyMessageRequest;
 import rs.raf.pds.v4.z5.messages.WhoRequest;
 
 
@@ -104,8 +106,9 @@ public class ChatServer implements Runnable{
 					ListMessages listMessages=new ListMessages(getMoreMessages(roomName, connection));
 					connection.sendTCP(listMessages);
 					return;
-					
-				}
+				}				}
+			
+
 		
 			
 			public void disconnected(Connection connection) {
@@ -280,6 +283,33 @@ public class ChatServer implements Runnable{
 	        return new ArrayList<>(); // Vraćamo praznu listu ako soba nije pronađena
 	    }
 	}
+	
+	private ArrayList<ChatMessage> getMoreMessages(String roomName, Connection con) {
+	    ChatRoom chatRoom = null;
+	    ArrayList<ChatMessage> messages=new ArrayList<>();
+	    for (ChatRoom room : chatRooms) {
+	        if (room.getName().equals(roomName)) {
+	            chatRoom = room;
+	            break;
+	        }
+	    }
+
+	    if (chatRoom != null) {
+	        if(chatRoom.getMessages().size()>5) {
+	        	for(int i=0;i<chatRoom.getMessages().size()-5;i++) {
+	        		messages.add(chatRoom.getMessages().get(i));
+	        	}
+	        	return messages;
+	        }else {
+	        	 con.sendTCP(new InfoMessage("Soba nema vise poruka!"));
+	        	 return new ArrayList<>();
+	        }
+	        	
+	        
+	    } else {
+	        return new ArrayList<>(); // Vraćamo praznu listu ako soba nije pronađena
+	    }
+	}
 
 
 	public void start() throws IOException {
@@ -299,7 +329,7 @@ public class ChatServer implements Runnable{
 			stopThread.interrupt();
 	}
 	@Override
-	public void run() {
+	public void run() { 
 		running = true;
 		
 		while(running) {
