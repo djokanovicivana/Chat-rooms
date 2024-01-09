@@ -323,6 +323,7 @@ public class ChatServer implements Runnable{
 	}
 	private boolean handleEditMessage(String roomName, int messageId, String newContent, Connection editorCon) {
 	    ChatRoom chatRoom = null;
+	    String userName=connectionUserMap.get(editorCon);
 	    for (ChatRoom room : chatRooms) {
 	        if (room.getName().equals(roomName)) {
 	            chatRoom = room;
@@ -333,8 +334,8 @@ public class ChatServer implements Runnable{
 	    	editorCon.sendTCP(new InfoMessage("Soba ne postoji!"));
 	        return false; 
 	    }
-
-	    ChatMessage editedMessage = chatRoom.getMessages().get(messageId);
+	    ChatMessage originalMessage = chatRoom.getMessages().get(messageId);
+	    ChatMessage editedMessage = originalMessage;
 	    if (editedMessage == null) {
 	    	editorCon.sendTCP(new InfoMessage("Poruka ne postoji!"));
 	        return false; 
@@ -343,14 +344,14 @@ public class ChatServer implements Runnable{
 	    editedMessage.setTxt(newContent);
 	    editorCon.sendTCP(new InfoMessage("Uspesno ste izmenili poruku!"));
 	    
-	    broadcastEditedMessage(chatRoom, editedMessage, messageId);
+	    broadcastEditedMessage(chatRoom, editedMessage, originalMessage,userName);
 
 	    return true; // Uspesno editovanje
 	}
-	private void broadcastEditedMessage(ChatRoom chatRoom, ChatMessage editedMessage, int messageId) {
+	private void broadcastEditedMessage(ChatRoom chatRoom, ChatMessage editedMessage, ChatMessage originalMessage, String userName) {
 	    for (Connection userConnection : chatRoom.getUsers()) {
 	        if (userConnection.isConnected()) {
-	            userConnection.sendTCP(new InfoMessage("Poruka '"+chatRoom.getMessages().get(messageId).getTxt()+ "' je izmenjena i sada glasi: "+editedMessage.getTxt() ));
+	            userConnection.sendTCP(new InfoMessage("Poruka '"+originalMessage.getTxt()+ "' je izmenjena od strane "+userName + " i sada glasi: "+editedMessage.getTxt() ));
 	        }
 	    }
 	}

@@ -345,7 +345,7 @@ public class ChatClient implements Runnable{
      	}
     	else if(userInput.startsWith("EDIT")) {
      		String[] text=userInput.split(" ",3);
-     		if(text.length==2) {
+     		if(text.length==3) {
      			editMessage(currentRoom,Integer.parseInt(text[1]),text[2]);
      		}else {
      			System.out.println("Format za editovanje poruke nije ispravan!");
